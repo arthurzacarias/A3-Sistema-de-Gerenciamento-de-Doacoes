@@ -1,0 +1,53 @@
+/* Estilização simples da interface */
+
+body {
+font-family: Arial;
+margin: 30px;
+}
+
+.botao {
+padding: 10px;
+background: green;
+color: white;
+text-decoration: none;
+border-radius: 5px;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+}
+
+td, th {
+border: 1px solid #ccc;
+padding: 8px;
+}
+
+form {
+    width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+}
+
+form input, form button {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

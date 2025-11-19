@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Document</title>
+    <script>
+    // Função que busca o endereço pelo CEP usando a rota da API
+    async function buscarCEP() {
+    let cep = document.getElementById("cep").value;
+    let res = await fetch(`/api/cep/${cep}`);
+    let dados = await res.json();
+
+        if (dados && !dados.erro) {
+            document.getElementById("endereco").value =
+                dados.logradouro + ", " + dados.bairro + " - " + dados.cidade + "/" + dados.estado;
+        }
+    }
+
+    </script>
+</head>
+<body>
+    <h1>Cadastrar Doação</h1>
+    <!-- Envia a doação via POST para /api/doacoes -->
+    <form method="POST" action="/api/doacoes">
+        <label>Item:</label>
+        <input type="text" name="item" required><br>
+
+        <label>Quantidade:</label>
+        <input type="number" name="quantidade" required><br>
+
+        <label>Tipo:</label>
+        <select name="tipo">
+        <option>alimento</option>
+        <option>roupa</option>
+        <option>material</option>
+        </select><br>
+
+        <label>CEP:</label>
+        <input type="text" id="cep" name="cep" onblur="buscarCEP()"><br>
+
+        <label>Endereço:</label>
+        <input type="text" name="endereco" id="endereco" required><br>
+
+        <label>Status:</label>
+        <select name="status">
+        <option>pendente</option>
+        <option>recebido</option>
+        <option>distribuído</option>
+        </select><br>
+
+        <button type="submit">Salvar</button>
+    </form>
+
+
+</body>
+</html>
