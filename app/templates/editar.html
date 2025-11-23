@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Editar Doação</title>
+</head>
+<body>
+
+    <h1>Editar Doação</h1>
+
+    <form action="/editar/{{ d[0] }}" method="post">
+
+        <label>Item:</label>
+        <input type="text" name="item" value="{{ d[1] }}" required>
+
+        <label>Quantidade:</label>
+        <input type="number" name="quantidade" value="{{ d[2] }}" required>
+
+        <label>Tipo:</label>
+        <input type="text" name="tipo" value="{{ d[3] }}" required>
+
+        <label>Endereço:</label>
+        <input type="text" name="endereco" value="{{ d[4] }}" required>
+
+        <label>Status:</label>
+        <select name="status">
+            <option value="pendente" {% if d[5]=='pendente' %}selected{% endif %}>Pendente</option>
+            <option value="concluída" {% if d[5]=='concluída' %}selected{% endif %}>Concluída</option>
+        </select>
+
+        <button type="submit" class="botao">Salvar Alterações</button>
+        <a href="/" class="botao botao-voltar">Cancelar</a>
+
+    </form>
+
+</body>
+</html>

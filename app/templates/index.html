@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
-    <title>Visualização de Doações</title>
+    <title>Doações Registradas</title>
 </head>
+
 <body>
+
     <h1>Doações Registradas</h1>
+
     <a href="/cadastro" class="botao">Cadastrar Nova Doação</a>
+
     <table>
         <tr>
             <th>Item</th>
@@ -16,17 +20,25 @@
             <th>Tipo</th>
             <th>Endereço</th>
             <th>Status</th>
+            <th>Ações</th>
         </tr>
-    <!-- Loop Jinja2: exibe cada doação -->
-    {% for d in doacoes %}
+
+        {% for d in doacoes %}
         <tr>
             <td>{{ d[1] }}</td>
             <td>{{ d[2] }}</td>
             <td>{{ d[3] }}</td>
             <td>{{ d[4] }}</td>
             <td>{{ d[5] }}</td>
+
+            <td>
+                <a href="/editar/{{ d[0] }}" class="botao botao-editar">Editar</a>
+                <a href="/excluir/{{ d[0] }}" class="botao botao-excluir"
+                   onclick="return confirm('Deseja realmente excluir?')">Excluir</a>
+            </td>
         </tr>
         {% endfor %}
     </table>
+
 </body>
 </html>
