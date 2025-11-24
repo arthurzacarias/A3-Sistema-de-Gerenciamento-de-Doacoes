@@ -1,32 +1,39 @@
-import os
 import pytest
+import os
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from app.main import app
-from app.database import Base
-from app.database import get_db
+import app.database as database
 
-TEST_DB_PATH = "tests/temp/test.db"
-os.makedirs("tests/temp", exist_ok=True)
-TEST_DATABASE_URL = f"sqlite:///{TEST_DB_PATH}"
+# Define um nome de banco de dados específico para testes
+TEST_DB_NAME = "test_doacoes.db"
 
-engine = create_engine(
-    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+@pytest.fixture(scope="function", autouse=True)
+def setup_test_db():
+    """
+    Esta fixture roda automaticamente antes de cada teste.
+    1. Troca o nome do banco para um arquivo de teste.
+    2. Cria a tabela do zero.
+    3. Roda o teste.
+    4. Apaga o banco de teste no final.
+    """
+    # 1. Patch: Troca o nome do banco na aplicação para o banco de teste
+    original_db_name = database.DB_NAME
+    database.DB_NAME = TEST_DB_NAME
 
-Base.metadata.create_all(bind=engine)
+    # 2. Garante que o banco antigo não exista e cria as tabelas novas
+    if os.path.exists(TEST_DB_NAME):
+        os.remove(TEST_DB_NAME)
+    database.criar_tabela()
 
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    yield # Aqui o teste acontece
 
-app.dependency_overrides[get_db] = override_get_db
+    # 3. Limpeza: Fecha conexões pendentes (se houver) e apaga o arquivo
+    database.DB_NAME = original_db_name
+    if os.path.exists(TEST_DB_NAME):
+        try:
+            os.remove(TEST_DB_NAME)
+        except PermissionError:
+            pass # Às vezes o windows segura o arquivo por alguns milissegundos
 
 @pytest.fixture
 def client():

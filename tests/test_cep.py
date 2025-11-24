@@ -1,24 +1,29 @@
 from unittest.mock import patch
 
-@patch("app.services.viacep.requests.get")
-def test_cep_valid(mock_get, client):
-    mock_get.return_value.status_code = 200
-    mock_get.return_value.json.return_value = {
-        "cep": "12345-000",
-        "localidade": "Cidade Teste",
-        "uf": "TS",
-        "logradouro": "Rua Teste"
-    }
+# O prefixo definido em cep.py é "/api"
+def test_cep_endpoint_valid(client):
+    # Mockamos a função buscar_cep para não chamar a API real
+    with patch("app.routers.cep.buscar_cep") as mock_busca:
+        mock_busca.return_value = {
+            "logradouro": "Rua Teste",
+            "bairro": "Bairro Teste",
+            "cidade": "Cidade Teste",
+            "estado": "TS"
+        }
+        
+        # A URL correta agora é /api/cep/{cep}
+        response = client.get("/api/cep/12345000")
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data["logradouro"] == "Rua Teste"
+        assert data["estado"] == "TS"
 
-    response = client.get("/cep/12345000")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["localidade"] == "Cidade Teste"
-    assert data["uf"] == "TS"
-
-
-@patch("app.services.viacep.requests.get")
-def test_cep_error(mock_get, client):
-    mock_get.return_value.status_code = 400
-    response = client.get("/cep/00000000")
-    assert response.status_code == 400
+def test_cep_endpoint_invalid(client):
+    with patch("app.routers.cep.buscar_cep") as mock_busca:
+        mock_busca.return_value = None
+        
+        response = client.get("/api/cep/00000000")
+        
+        assert response.status_code == 200
+        assert response.json() == {"erro": "CEP inválido"}
