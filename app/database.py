@@ -13,7 +13,7 @@ def criar_tabela():
         CREATE TABLE IF NOT EXISTS doacoes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             item TEXT NOT NULL,
-            quantidade INTEGER NOT NULL,
+            quantidade TEXT NOT NULL, -- Mudado de INTEGER para TEXT
             tipo TEXT NOT NULL,
             cep TEXT NOT NULL,
             logradouro TEXT NOT NULL,

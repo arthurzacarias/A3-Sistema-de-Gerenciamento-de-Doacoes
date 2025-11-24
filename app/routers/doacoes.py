@@ -21,7 +21,7 @@ def form_cadastro(request: Request):
 @router.post("/doacoes")
 def criar_doacao(
     item: str = Form(...),
-    quantidade: int = Form(...),
+    quantidade: str = Form(...), # Mudado de int para str para aceitar "1 kg", "1 litro"
     tipo: str = Form(...),
     cep: str = Form(...),
     logradouro: str = Form(...),
@@ -35,12 +35,12 @@ def criar_doacao(
     # Salva no banco com os campos separados
     salvar_doacao(item, quantidade, tipo, cep, logradouro, numero, complemento, bairro, cidade, estado, status)
 
-    # Redireciona para confirmação (ajustei a URL para não ficar gigante, passando só o básico)
+    # Redireciona para confirmação
     url = f"/confirmacao?item={item}&quantidade={quantidade}&tipo={tipo}"
     return RedirectResponse(url=url, status_code=303)
 
 @router.get("/confirmacao")
-def confirmacao(request: Request, item: str, quantidade: int, tipo: str):
+def confirmacao(request: Request, item: str, quantidade: str, tipo: str):
     return templates.TemplateResponse("confirmacao.html", {
         "request": request, 
         "item": item, 
@@ -48,7 +48,7 @@ def confirmacao(request: Request, item: str, quantidade: int, tipo: str):
         "tipo": tipo
     })
 
-# Rotas de Edição e Exclusão (necessárias para o sistema completo)
+# Rotas de Edição e Exclusão
 @router.get("/editar/{id_doacao}")
 def form_editar(request: Request, id_doacao: int):
     d = buscar_doacao_por_id(id_doacao)
@@ -58,7 +58,7 @@ def form_editar(request: Request, id_doacao: int):
 def salvar_edicao(
     id_doacao: int,
     item: str = Form(...),
-    quantidade: int = Form(...),
+    quantidade: str = Form(...), # Mudado de int para str
     tipo: str = Form(...),
     cep: str = Form(...),
     logradouro: str = Form(...),
