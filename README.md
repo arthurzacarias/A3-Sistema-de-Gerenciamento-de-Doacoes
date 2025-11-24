@@ -1,5 +1,5 @@
 # A3-Sistema-de-Gerenciamento-de-Doacoes
-Repositório para 
+Sistema de gerenciamento para facilitar na organização de doações para a cidade de Rio Bonito do Iguaçu.
 
 Para executar
 
