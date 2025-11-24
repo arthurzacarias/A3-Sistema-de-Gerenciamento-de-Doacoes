@@ -16,24 +16,34 @@
     <table>
         <tr>
             <th>Item</th>
-            <th>Quantidade</th>
+            <th>Qtd</th>
             <th>Tipo</th>
-            <th>Endereço</th>
+            <th>Endereço Completo</th>
             <th>Status</th>
             <th>Ações</th>
         </tr>
 
         {% for d in doacoes %}
         <tr>
+            <!-- d[0]=id, d[1]=item, d[2]=qtd, d[3]=tipo -->
             <td>{{ d[1] }}</td>
             <td>{{ d[2] }}</td>
             <td>{{ d[3] }}</td>
-            <td>{{ d[4] }}</td>
-            <td>{{ d[5] }}</td>
+            
+            <!-- Montando o endereço visualmente: Rua, Num - Bairro, Cidade/UF -->
+            <td>
+                {{ d[5] }}, {{ d[6] }} 
+                {% if d[7] %} ({{ d[7] }}) {% endif %} 
+                - {{ d[8] }}, {{ d[9] }}/{{ d[10] }}
+            </td>
+            
+            <!-- d[11] = status -->
+            <td>{{ d[11] }}</td>
 
             <td>
                 <a href="/editar/{{ d[0] }}" class="botao botao-editar">Editar</a>
                 <a href="/excluir/{{ d[0] }}" class="botao botao-excluir"
+                   style="background-color: #dc3545;"
                    onclick="return confirm('Deseja realmente excluir?')">Excluir</a>
             </td>
         </tr>

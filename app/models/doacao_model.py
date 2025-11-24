@@ -1,8 +1,15 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class Doacao(BaseModel):
-    nome: str            # Nome de quem está doando
-    item: str            # Item doado (ex: roupas, alimentos)
-    quantidade: int      # Quantidade do item
-    cep: str             # CEP informado no cadastro
-    endereco: dict | None = None   # Endereço retornado pela API ViaCEP
+    nome: str            
+    item: str            
+    quantidade: int      
+    cep: str             
+    logradouro: str
+    numero: int
+    complemento: Optional[str] = None
+    bairro: str
+    cidade: str
+    estado: str
+    status: str

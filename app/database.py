@@ -1,54 +1,76 @@
 import sqlite3
 
-# Nome do arquivo do banco
-DB_NAME = "doacoes.db" 
+DB_NAME = "doacoes.db"
 
 def conectar():
-    # Cria e retorna uma conexão com o banco SQLite
-    return sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(DB_NAME)
+    return conn
 
 def criar_tabela():
-    # Cria tabela de doações caso ainda não exista
     conn = conectar()
-    cur = conn.cursor()
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS doacoes(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    item TEXT,
-    quantidade INTEGER,
-    tipo TEXT,
-    endereco TEXT,
-    status TEXT
-    )
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS doacoes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item TEXT NOT NULL,
+            quantidade INTEGER NOT NULL,
+            tipo TEXT NOT NULL,
+            cep TEXT NOT NULL,
+            logradouro TEXT NOT NULL,
+            numero INTEGER NOT NULL,
+            complemento TEXT,
+            bairro TEXT NOT NULL,
+            cidade TEXT NOT NULL,
+            estado TEXT NOT NULL,
+            status TEXT NOT NULL
+        )
     """)
-
     conn.commit()
     conn.close()
 
-# Cria tabela automaticamente ao iniciar o sistema
+# Inicializa a tabela ao importar
 criar_tabela()
 
-def salvar_doacao(item, quantidade, tipo, endereco, status):
-    #Insere uma nova doação no banco
+def salvar_doacao(item, quantidade, tipo, cep, logradouro, numero, complemento, bairro, cidade, estado, status):
     conn = conectar()
-    cur = conn.cursor()
-
-    cur.execute(
-    "INSERT INTO doacoes(item, quantidade, tipo, endereco, status) VALUES (?, ?, ?, ?, ?)",
-    (item, quantidade, tipo, endereco, status)
-    )
-
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO doacoes (item, quantidade, tipo, cep, logradouro, numero, complemento, bairro, cidade, estado, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (item, quantidade, tipo, cep, logradouro, numero, complemento, bairro, cidade, estado, status))
     conn.commit()
     conn.close()
 
 def listar_doacoes():
-    # Retorna todas as doações cadastradas
     conn = conectar()
-    cur = conn.cursor()
-
-    cur.execute("SELECT id, item, quantidade, tipo, endereco, status FROM doacoes")
-    data = cur.fetchall()
-
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM doacoes")
+    doacoes = cursor.fetchall()
     conn.close()
-    return data
+    return doacoes
+
+def buscar_doacao_por_id(id_doacao):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM doacoes WHERE id = ?", (id_doacao,))
+    d = cursor.fetchone()
+    conn.close()
+    return d
+
+def atualizar_doacao(id_doacao, item, quantidade, tipo, cep, logradouro, numero, complemento, bairro, cidade, estado, status):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE doacoes 
+        SET item=?, quantidade=?, tipo=?, cep=?, logradouro=?, numero=?, complemento=?, bairro=?, cidade=?, estado=?, status=?
+        WHERE id=?
+    """, (item, quantidade, tipo, cep, logradouro, numero, complemento, bairro, cidade, estado, status, id_doacao))
+    conn.commit()
+    conn.close()
+
+def excluir_doacao(id_doacao):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM doacoes WHERE id = ?", (id_doacao,))
+    conn.commit()
+    conn.close()

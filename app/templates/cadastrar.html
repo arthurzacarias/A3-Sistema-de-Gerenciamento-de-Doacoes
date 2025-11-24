@@ -4,55 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
-    <title>Document</title>
+    <title>Cadastrar Doação</title>
     <script>
-    // Função que busca o endereço pelo CEP usando a rota da API
     async function buscarCEP() {
-    let cep = document.getElementById("cep").value;
-    let res = await fetch(`/api/cep/${cep}`);
-    let dados = await res.json();
+        let cep = document.getElementById("cep").value;
+        // Remove traços para evitar erro
+        cep = cep.replace(/\D/g, ''); 
+        
+        if (cep.length === 8) {
+            let res = await fetch(`/api/cep/${cep}`);
+            let dados = await res.json();
 
-        if (dados && !dados.erro) {
-            document.getElementById("endereco").value =
-                dados.logradouro + ", " + dados.bairro + " - " + dados.cidade + "/" + dados.estado;
+            if (dados && !dados.erro) {
+                document.getElementById("logradouro").value = dados.logradouro;
+                document.getElementById("bairro").value = dados.bairro;
+                document.getElementById("cidade").value = dados.cidade;
+                document.getElementById("estado").value = dados.estado;
+                
+                // Foca no campo número para o usuário digitar
+                document.getElementById("numero").focus();
+            } else {
+                alert("CEP não encontrado");
+            }
         }
     }
-
     </script>
 </head>
 <body>
     <h1>Cadastrar Doação</h1>
-    <!-- Envia a doação via POST para doacoes -->
-    <form method="POST" action="doacoes">
+    
+    <form method="POST" action="/doacoes">
+        <h3>Dados do Item</h3>
         <label>Item:</label>
-        <input type="text" name="item" required><br>
+        <input type="text" name="item" required placeholder="Ex: Arroz, Camiseta">
 
         <label>Quantidade:</label>
-        <input type="number" name="quantidade" required><br>
+        <input type="text" name="quantidade" required>
 
         <label>Tipo:</label>
         <select name="tipo">
-        <option>alimento</option>
-        <option>roupa</option>
-        <option>material</option>
-        </select><br>
+            <option>Alimento</option>
+            <option>Roupa</option>
+            <option>Material</option>
+            <option>Outro</option>
+        </select>
 
+        <h3>Endereço de Retirada</h3>
         <label>CEP:</label>
-        <input type="text" id="cep" name="cep" onblur="buscarCEP()"><br>
+        <input type="text" id="cep" name="cep" onblur="buscarCEP()" placeholder="00000-000" required>
 
-        <label>Endereço:</label>
-        <input type="text" name="endereco" id="endereco" required><br>
+        <label>Logradouro (Rua/Av):</label>
+        <input type="text" name="logradouro" id="logradouro" required readonly style="background-color: #f0f0f0;">
+
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label>Número:</label>
+                <input type="number" name="numero" id="numero" required>
+            </div>
+            <div style="flex: 1;">
+                <label>Complemento:</label>
+                <input type="text" name="complemento" id="complemento" placeholder="Apto, Bloco...">
+            </div>
+        </div>
+
+        <label>Bairro:</label>
+        <input type="text" name="bairro" id="bairro" required readonly style="background-color: #f0f0f0;">
+
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 3;">
+                <label>Cidade:</label>
+                <input type="text" name="cidade" id="cidade" required readonly style="background-color: #f0f0f0;">
+            </div>
+            <div style="flex: 1;">
+                <label>UF:</label>
+                <input type="text" name="estado" id="estado" required readonly style="background-color: #f0f0f0;">
+            </div>
+        </div>
 
         <label>Status:</label>
         <select name="status">
-        <option>pendente</option>
-        <option>recebido</option>
-        <option>distribuído</option>
-        </select><br>
+            <option>Pendente</option>
+            <option>Recebido</option>
+        </select>
 
-        <button type="submit">Salvar</button>
+        <button type="submit" class="botao">Salvar</button>
+        <button type="button" class="botao" style="background-color: #6c757d;" onclick="window.location.href='/'">Voltar</button>
     </form>
-
-
 </body>
 </html>

@@ -5,33 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
     <title>Editar Doação</title>
+    <script>
+        async function buscarCEP() {
+            let cep = document.getElementById("cep").value;
+            cep = cep.replace(/\D/g, ''); 
+            
+            if (cep.length === 8) {
+                let res = await fetch(`/api/cep/${cep}`);
+                let dados = await res.json();
+    
+                if (dados && !dados.erro) {
+                    document.getElementById("logradouro").value = dados.logradouro;
+                    document.getElementById("bairro").value = dados.bairro;
+                    document.getElementById("cidade").value = dados.cidade;
+                    document.getElementById("estado").value = dados.estado;
+                }
+            }
+        }
+        </script>
 </head>
 <body>
 
     <h1>Editar Doação</h1>
 
+    <!-- Acessando pelo índice da tupla do banco de dados -->
     <form action="/editar/{{ d[0] }}" method="post">
 
         <label>Item:</label>
         <input type="text" name="item" value="{{ d[1] }}" required>
 
         <label>Quantidade:</label>
-        <input type="number" name="quantidade" value="{{ d[2] }}" required>
+        <input type="text" name="quantidade" value="{{ d[2] }}" required>
 
         <label>Tipo:</label>
-        <input type="text" name="tipo" value="{{ d[3] }}" required>
+        <select name="tipo">
+            <option value="Alimento" {% if d[3]=='Alimento' %}selected{% endif %}>Alimento</option>
+            <option value="Roupa" {% if d[3]=='Roupa' %}selected{% endif %}>Roupa</option>
+            <option value="Material" {% if d[3]=='Material' %}selected{% endif %}>Material</option>
+            <option value="Outro" {% if d[3]=='Outro' %}selected{% endif %}>Outro</option>
+        </select>
 
-        <label>Endereço:</label>
-        <input type="text" name="endereco" value="{{ d[4] }}" required>
+        <h3>Endereço</h3>
+        <label>CEP:</label>
+        <input type="text" id="cep" name="cep" value="{{ d[4] }}" onblur="buscarCEP()" required>
+
+        <label>Logradouro:</label>
+        <input type="text" name="logradouro" id="logradouro" value="{{ d[5] }}" required readonly style="background-color: #f0f0f0;">
+
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label>Número:</label>
+                <input type="number" name="numero" value="{{ d[6] }}" required>
+            </div>
+            <div style="flex: 1;">
+                <label>Complemento:</label>
+                <!-- O 'or' vazio garante que não apareça 'None' no input -->
+                <input type="text" name="complemento" value="{{ d[7] or '' }}">
+            </div>
+        </div>
+
+        <label>Bairro:</label>
+        <input type="text" name="bairro" id="bairro" value="{{ d[8] }}" required readonly style="background-color: #f0f0f0;">
+
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 3;">
+                <label>Cidade:</label>
+                <input type="text" name="cidade" id="cidade" value="{{ d[9] }}" required readonly style="background-color: #f0f0f0;">
+            </div>
+            <div style="flex: 1;">
+                <label>UF:</label>
+                <input type="text" name="estado" id="estado" value="{{ d[10] }}" required readonly style="background-color: #f0f0f0;">
+            </div>
+        </div>
 
         <label>Status:</label>
         <select name="status">
-            <option value="pendente" {% if d[5]=='pendente' %}selected{% endif %}>Pendente</option>
-            <option value="concluída" {% if d[5]=='concluída' %}selected{% endif %}>Concluída</option>
+            <option value="Pendente" {% if d[11]=='Pendente' %}selected{% endif %}>Pendente</option>
+            <option value="Recebido" {% if d[11]=='Recebido' %}selected{% endif %}>Recebido</option>
         </select>
 
         <button type="submit" class="botao">Salvar Alterações</button>
-        <a href="/" class="botao botao-voltar">Cancelar</a>
+        <a href="/" class="botao botao-voltar" style="background-color: #6c757d; text-align:center; display:block; margin-top:10px;">Cancelar</a>
 
     </form>
 
